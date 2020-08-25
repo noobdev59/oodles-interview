@@ -34,8 +34,11 @@ INSTALLED_APPS = [
     # Third Party Packages
     'rest_framework', # https://www.django-rest-framework.org/
     'django_extensions', # https://django-extensions.readthedocs.io/
+    'phone_field', # https://pypi.org/project/django-phone-field/
 
     # Custom Apps 
+    'userauth', # custom user authentication
+    'utils' # stores models to link with Custom User Model
 ]
 
 MIDDLEWARE = [
@@ -67,8 +70,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'oodles.wsgi.application'
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -113,3 +114,6 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'userauth.Profile'
+
