@@ -8,7 +8,7 @@ class CreateProfileModelSerializer(ModelSerializer):
     class Meta:
         model = Profile
         depth = 1
-        fields = ('name', 'email', 'password', 'phone_number', 'gender', 'date_of_birth', 'username')
+        fields = ('id', 'name', 'email', 'password', 'phone_number', 'gender', 'date_of_birth', 'username')
 
 
 class ProfileModelSerializer(ModelSerializer):
