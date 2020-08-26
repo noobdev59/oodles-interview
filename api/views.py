@@ -1,4 +1,5 @@
 from django.contrib.auth import logout
+from django.contrib.auth.hashers import make_password
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,21 +24,20 @@ class ProfileModelViewSet(ModelViewSet):
     parser_classes = [FileUploadParser, ]
 
 
-class RegisterUser(generics.ListCreateAPIView):
+class RegisterUser(APIView):
     queryset = Profile.objects.none()
     serializer_class = CreateProfileModelSerializer
 
-    # this peice of snippet is left in order to demonstrate,
-    # that I am able to save data while validating programatically
-    """
     def post(self, request):
-        data = self.serializer_class(data=request.data)
-        if data.is_valid():
-            data.save()
-            return Response(data.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
-    """
+        user = Profile.objects.create(name=request.data.get('name'),
+                                   username=request.data.get('username'),
+                                   email=request.data.get('email'),
+                                  password=make_password(request.data.get('password')),
+                                  phone_number=request.data.get('phone_number'),
+                                  gender=request.data.get('gender'),
+                                  date_of_birth=request.data.get('date_of_birth'))
+        data = ProfileModelSerializer(user, many=False)
+        return Response(data.data, status=status.HTTP_201_CREATED)
 
 
 class UpdateUserProfile(generics.UpdateAPIView):
