@@ -35,10 +35,13 @@ INSTALLED_APPS = [
     'rest_framework', # https://www.django-rest-framework.org/
     'django_extensions', # https://django-extensions.readthedocs.io/
     'phone_field', # https://pypi.org/project/django-phone-field/
+    'rest_framework.authtoken', # enables token authentication
+    'drf_yasg', # https://github.com/axnsan12/drf-yasg
 
     # Custom Apps 
     'userauth', # custom user authentication
-    'utils' # stores models to link with Custom User Model
+    'utils', # stores models to link with Custom User Model
+    'api' # holds all the API's provided by the application
 ]
 
 MIDDLEWARE = [
@@ -68,6 +71,12 @@ TEMPLATES = [
         },
     },
 ]
+REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'rest_framework.authentication.TokenAuthentication',
+            'rest_framework.authentication.SessionAuthentication'
+        ],
+}
 
 WSGI_APPLICATION = 'oodles.wsgi.application'
 

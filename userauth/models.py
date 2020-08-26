@@ -11,7 +11,7 @@ def profile_upload_image_handler(instance, filename):
 
 
 class ProfileManager(BaseUserManager):
-    def create_user(self, email, name, phone_number, password=None):
+    def create_user(self, email, name, phone_number, username, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -23,7 +23,8 @@ class ProfileManager(BaseUserManager):
         if not phone_number:
             raise ValueError('Phone Number is required during registration')
         try:
-            Profile.objects.get(phone_number=phone_number)
+            print('inside try block')
+            profile = Profile.objects.get(phone_number=phone_number)
             raise ValueError('This phone number is already in use.')
         except Profile.DoesNotExist:
             pass
@@ -31,14 +32,15 @@ class ProfileManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
             phone_number=phone_number,
-            name=name
+            name=name,
+            username=username
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, phone_number, password=None):
+    def create_superuser(self, email, name, phone_number, username, password=None):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -47,6 +49,7 @@ class ProfileManager(BaseUserManager):
             email,
             name,
             phone_number,
+            username=username,
             password=password,
         )
         user.is_admin = True
@@ -63,25 +66,25 @@ class Profile(AbstractBaseUser):
 
     name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
-    phone_number = PhoneField(unique=True)
+    phone_number = PhoneField(max_length=255, unique=True)
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
         unique=True,
     )
-    gender = models.CharField(choices=GENDER_CHOICES, max_length=255)
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=255, null=True, blank=True)
     date_of_birth = models.DateTimeField(null=True, blank=True)
     permanent_address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='permanent_address', null=True, blank=True)
     company_address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='company_address', null=True, blank=True)
-    profile_picture = models.ImageField(upload_to=profile_upload_image_handler, null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile-pictures', null=True, blank=True)
     friends = models.ManyToManyField(Friend, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     objects = ProfileManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'phone_number', ]
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['name', 'phone_number', 'email']
 
     def __str__(self):
         return self.email
